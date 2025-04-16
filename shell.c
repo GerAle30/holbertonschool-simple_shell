@@ -163,6 +163,7 @@ int handle_builtins(char **args)
 	if (_strcmp(args[0], "env") == 0)
 	{
 		char **env = environ;
+
 		while (*env)
 			printf("%s\n", *env++);
 		return (1);
