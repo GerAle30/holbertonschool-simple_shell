@@ -15,17 +15,13 @@ int execute_command(char **args, char *shell_name, int line_number)
 	if (!args[0])
 		return (1);
 	/* Empty command*/
-
 	/* Try built-ins first*/
 	if (strcmp(args[0], "exit") == 0)
 		return (shell_exit(args, shell_name, line_number));
-
 	if (strcmp(args[0], "env") == 0)
 		return (shell_env(args));
-
 	if (strcmp(args[0], "cd") == 0)
 		return (shell_cd(args, shell_name, line_number));
-
 	/* Fork to run external command*/
 	child_pid = fork();
 	if (child_pid == 0)
