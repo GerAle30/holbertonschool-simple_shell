@@ -71,7 +71,7 @@ char *find_path(const char *command)
 	if (command[0] == '/' || command[0] == '.')
 	{
 		if (stat(command, &st) == 0)
-			return _strdup(command);
+			return (_strdup(command));
 		return (NULL);
 	}
 
@@ -121,14 +121,12 @@ int execute_command(char **args, char *shell_name)
 	/* Handle built-in commands */
 	if (handle_builtins(args) == 0)
 		return (0);
-
 	path = find_path(args[0]);
 	if (!path)
 	{
 		fprintf(stderr, "%s: 1: %s: not found\n", shell_name, args[0]);
 		return (1);
 	}
-
 	pid = fork();
 	if (pid == -1)
 	{
@@ -136,7 +134,6 @@ int execute_command(char **args, char *shell_name)
 		free(path);
 		return (1);
 	}
-
 	if (pid == 0)
 	{
 		if (execve(path, args, environ) == -1)
@@ -169,6 +166,7 @@ int handle_builtins(char **args)
 		while (*env)
 			printf("%s\n", *env++);
 		return (1);
+
 	}
 	return (-1);
 }
