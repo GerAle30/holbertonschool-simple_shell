@@ -49,6 +49,5 @@ int execute_command(char **args, char *shell_name, int line_number)
 		waitpid(child_pid, &status, 0);
 		exit_status = WEXITSTATUS(status);
 	}
-
 	return (exit_status);
 }
