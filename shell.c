@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 		free(args);
 	}
 
-	return EXIT_SUCCESS;
+	return (EXIT_SUCCESS);
 }
 
 /**
@@ -65,19 +65,19 @@ char *find_path(const char *command)
 	struct stat st;
 
 	if (!command)
-		return NULL;
+		return (NULL);
 
 	/* Check if command has path (/, ./) */
 	if (command[0] == '/' || command[0] == '.')
 	{
 		if (stat(command, &st) == 0)
 			return _strdup(command);
-		return NULL;
+		return (NULL);
 	}
 
 	path = getenv("PATH");
 	if (!path)
-		return NULL;
+		return (NULL);
 
 	path = _strdup(path);
 	dir = strtok(path, ":");
@@ -92,16 +92,15 @@ char *find_path(const char *command)
 		if (stat(full_path, &st) == 0)
 		{
 			free(path);
-			return full_path;
+			return (full_path);
 		}
 
 		full_path[0] = '\0';
 		dir = strtok(NULL, ":");
 	}
-
 	free(full_path);
 	free(path);
-	return NULL;
+	return (NULL);
 }
 
 /**
@@ -117,17 +116,17 @@ int execute_command(char **args, char *shell_name)
 	int status;
 
 	if (!args || !args[0])
-		return 1;
+		return (1);
 
 	/* Handle built-in commands */
 	if (handle_builtins(args) == 0)
-		return 0;
+		return (0);
 
 	path = find_path(args[0]);
 	if (!path)
 	{
 		fprintf(stderr, "%s: 1: %s: not found\n", shell_name, args[0]);
-		return 1;
+		return (1);
 	}
 
 	pid = fork();
@@ -135,7 +134,7 @@ int execute_command(char **args, char *shell_name)
 	{
 		perror("fork");
 		free(path);
-		return 1;
+		return (1);
 	}
 
 	if (pid == 0)
@@ -152,10 +151,8 @@ int execute_command(char **args, char *shell_name)
 		waitpid(pid, &status, 0);
 		free(path);
 	}
-
-	return 1;
+	return (1);
 }
-
 /**
  * handle_builtins - Handles built-in commands
  * @args: Command arguments
@@ -164,15 +161,14 @@ int execute_command(char **args, char *shell_name)
 int handle_builtins(char **args)
 {
 	if (_strcmp(args[0], "exit") == 0)
-		return 0;
+		return (0);
 
 	if (_strcmp(args[0], "env") == 0)
 	{
 		char **env = environ;
 		while (*env)
 			printf("%s\n", *env++);
-		return 1;
+		return (1);
 	}
-
-	return -1;
+	return (-1);
 }
