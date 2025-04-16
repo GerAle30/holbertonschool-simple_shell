@@ -1,6 +1,6 @@
 #include "shell.h"
 
-int exit_status; // Tracks last command's exit code
+int exit_status; /* Tracks last command's exit code*/
 
 /**
  * main - Starts the shell
@@ -33,7 +33,8 @@ int main(int argc, char **argv)
 		if (args[0])
 		{
 			execute_command(args, argv[0], line_number);
-			if (!is_terminal) line_number++;
+			if (!is_terminal)
+				line_number++;
 		}
 
 		free(args); /* Clean up*/
