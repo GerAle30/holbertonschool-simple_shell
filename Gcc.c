@@ -1,16 +1,16 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -Werror
+CFLAGS = - Wall - Wextra - pedantic - Werror
 
 SRC = main.c parser.c execute.c builtins.c path.c
-OBJ = $(SRC:.c=.o)
+OBJ = $(SRC : .c =.o)
 EXEC = hsh
 
-all: $(EXEC)
+all : $(EXEC)
 
-$(EXEC): $(OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
+$(EXEC) : $(OBJ)
+	$(CC) $(CFLAGS) $ ^ -o $@
 
-clean:
+clean :
 	rm -f $(OBJ) $(EXEC)
 
-re: clean all
+re : clean all
