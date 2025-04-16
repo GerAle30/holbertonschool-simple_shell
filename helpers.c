@@ -71,3 +71,31 @@ int _strcmp(const char *s1, const char *s2)
     }
     return *(unsigned char *)s1 - *(unsigned char *)s2;
 }
+
+/**
+ * parse_input - Parses input into arguments
+ * @input: Input string to parse
+ * Return: Array of arguments (NULL-terminated)
+ */
+char **parse_input(char *input)
+{
+    char **args = malloc(MAX_ARGS * sizeof(char *));
+    char *token;
+    int i = 0;
+
+    if (!args)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    token = strtok(input, " \t\n");
+    while (token != NULL && i < MAX_ARGS - 1)
+    {
+        args[i++] = token;
+        token = strtok(NULL, " \t\n");
+    }
+    args[i] = NULL;
+
+    return args;
+}

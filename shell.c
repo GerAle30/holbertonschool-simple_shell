@@ -1,30 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <errno.h>
-
-#define MAX_INPUT 1024
-#define MAX_ARGS 64
-#define MAX_PATH_LEN 1024
-#define PROMPT "#cisfun$ "
-
-extern char **environ;
-
-/* Helper Functions */
-int _strlen(const char *s);
-char *_strdup(const char *str);
-char *_strcat(char *dest, const char *src);
-int _strcmp(const char *s1, const char *s2);
-
-/* Core Functions */
-void display_prompt(void);
-char *find_path(const char *command);
-char **parse_input(char *input);
-int execute_command(char **args, char *shell_name);
-int handle_builtins(char **args);
+#include "shell.h"
 
 /**
  * main - Simple shell entry point
@@ -69,8 +43,6 @@ int main(int argc, char **argv)
 
     return EXIT_SUCCESS;
 }
-
-/* Implementations of all functions... */
 
 /**
  * display_prompt - Displays shell prompt
@@ -204,5 +176,3 @@ int handle_builtins(char **args)
 
     return -1;
 }
-
-/* String helper functions implementations... */
