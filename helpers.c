@@ -8,9 +8,10 @@
 int _strlen(const char *s)
 {
 	int len = 0;
+
 	while (s && s[len])
 		len++;
-	return len;
+	return (len);
 }
 
 /**
@@ -24,17 +25,17 @@ char *_strdup(const char *str)
 	int len, i;
 
 	if (!str)
-		return NULL;
+		return (NULL);
 
 	len = _strlen(str);
 	new = malloc(sizeof(char) * (len + 1));
 	if (!new)
-		return NULL;
+		return (NULL);
 
 	for (i = 0; i <= len; i++)
 		new[i] = str[i];
 
-	return new;
+	return (new);
 }
 
 /**
@@ -53,7 +54,7 @@ char *_strcat(char *dest, const char *src)
 		dest[i + j] = src[j];
 	dest[i + j] = '\0';
 
-	return dest;
+	return (dest);
 }
 
 /**
@@ -69,7 +70,7 @@ int _strcmp(const char *s1, const char *s2)
 		s1++;
 		s2++;
 	}
-	return *(unsigned char *)s1 - *(unsigned char *)s2;
+	return (*(unsigned char *)s1 - *(unsigned char *)s2);
 }
 
 /**
@@ -97,5 +98,5 @@ char **parse_input(char *input)
 	}
 	args[i] = NULL;
 
-	return args;
+	return (args);
 }
