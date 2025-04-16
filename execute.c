@@ -12,7 +12,8 @@ int execute_command(char **args, char *shell_name, int line_number)
 	pid_t child_pid;
 	int status;
 
-	if (!args[0]) return 1;
+	if (!args[0])
+		return (1);
 	/* Empty command*/
 
 	// Try built-ins first
