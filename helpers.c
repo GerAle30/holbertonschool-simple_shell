@@ -7,10 +7,10 @@
  */
 int _strlen(const char *s)
 {
-    int len = 0;
-    while (s && s[len])
-        len++;
-    return len;
+	int len = 0;
+	while (s && s[len])
+		len++;
+	return len;
 }
 
 /**
@@ -20,21 +20,21 @@ int _strlen(const char *s)
  */
 char *_strdup(const char *str)
 {
-    char *new;
-    int len, i;
+	char *new;
+	int len, i;
 
-    if (!str)
-        return NULL;
+	if (!str)
+		return NULL;
 
-    len = _strlen(str);
-    new = malloc(sizeof(char) * (len + 1));
-    if (!new)
-        return NULL;
+	len = _strlen(str);
+	new = malloc(sizeof(char) * (len + 1));
+	if (!new)
+		return NULL;
 
-    for (i = 0; i <= len; i++)
-        new[i] = str[i];
+	for (i = 0; i <= len; i++)
+		new[i] = str[i];
 
-    return new;
+	return new;
 }
 
 /**
@@ -45,15 +45,15 @@ char *_strdup(const char *str)
  */
 char *_strcat(char *dest, const char *src)
 {
-    int i, j;
+	int i, j;
 
-    for (i = 0; dest[i] != '\0'; i++)
-        ;
-    for (j = 0; src[j] != '\0'; j++)
-        dest[i + j] = src[j];
-    dest[i + j] = '\0';
+	for (i = 0; dest[i] != '\0'; i++)
+		;
+	for (j = 0; src[j] != '\0'; j++)
+		dest[i + j] = src[j];
+	dest[i + j] = '\0';
 
-    return dest;
+	return dest;
 }
 
 /**
@@ -64,12 +64,12 @@ char *_strcat(char *dest, const char *src)
  */
 int _strcmp(const char *s1, const char *s2)
 {
-    while (*s1 && (*s1 == *s2))
-    {
-        s1++;
-        s2++;
-    }
-    return *(unsigned char *)s1 - *(unsigned char *)s2;
+	while (*s1 && (*s1 == *s2))
+	{
+		s1++;
+		s2++;
+	}
+	return *(unsigned char *)s1 - *(unsigned char *)s2;
 }
 
 /**
@@ -79,23 +79,23 @@ int _strcmp(const char *s1, const char *s2)
  */
 char **parse_input(char *input)
 {
-    char **args = malloc(MAX_ARGS * sizeof(char *));
-    char *token;
-    int i = 0;
+	char **args = malloc(MAX_ARGS * sizeof(char *));
+	char *token;
+	int i = 0;
 
-    if (!args)
-    {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
+	if (!args)
+	{
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
 
-    token = strtok(input, " \t\n");
-    while (token != NULL && i < MAX_ARGS - 1)
-    {
-        args[i++] = token;
-        token = strtok(NULL, " \t\n");
-    }
-    args[i] = NULL;
+	token = strtok(input, " \t\n");
+	while (token != NULL && i < MAX_ARGS - 1)
+	{
+		args[i++] = token;
+		token = strtok(NULL, " \t\n");
+	}
+	args[i] = NULL;
 
-    return args;
+	return args;
 }
