@@ -1,5 +1,5 @@
 #include "shell.h"
-
+#include <unistd.h>  /* Implicitly declares 'extern char **environ'*/
 int exit_status; /* Tracks last command's exit code*/
 
 /**
