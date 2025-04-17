@@ -7,14 +7,14 @@ TARGET := hsh
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
+			 $(CC) $(CFLAGS) $^ -o $@
 
-clean:
-	rm -f $(OBJ)
+					  clean:
+rm -f $(OBJ)
 
-fclean: clean
-	rm -f $(TARGET)
+	fclean: clean
+rm -f $(TARGET)
 
-re: fclean all
+	re: fclean all
 
-.PHONY: all clean fclean re
+	.PHONY: all clean fclean re
