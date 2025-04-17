@@ -103,33 +103,33 @@ char **parse_input(char *input)
 
 size_t _strlen(const char *s)
 {
-    size_t len = 0;
-    while (s && s[len])
-        len++;
-    return len;
+	size_t len = 0;
+	while (s && s[len])
+		len++;
+	return (len);
 }
 
 char *_strdup(const char *str)
 {
-    size_t len = _strlen(str) + 1;
-    char *new = malloc(len);
-    if (new)
-        memcpy(new, str, len);
-    return new;
+	size_t len = _strlen(str) + 1;
+	char *new = malloc(len);
+	if (new)
+		memcpy(new, str, len);
+	return (new);
 }
 
 char *_strcat(char *dest, const char *src)
 {
-    char *ptr = dest + _strlen(dest);
-    while (*src)
-        *ptr++ = *src++;
-    *ptr = '\0';
-    return dest;
+	char *ptr = dest + _strlen(dest);
+	while (*src)
+		*ptr++ = *src++;
+	*ptr = '\0';
+	return (dest);
 }
 
 int _strcmp(const char *s1, const char *s2)
 {
-    while (*s1 && (*s1 == *s2))
-        s1++, s2++;
-    return *(unsigned char *)s1 - *(unsigned char *)s2;
+	while (*s1 && (*s1 == *s2))
+		s1++, s2++;
+	return (*(unsigned char *)s1 - *(unsigned char *)s2);
 }

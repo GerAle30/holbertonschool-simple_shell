@@ -1,32 +1,18 @@
 #include "shell.h"
 
-int shell_exit(char **args, char *shell_name, int line_num)
-{
-	int status = 0;
-	(void)shell_name;
-	(void)line_num;
-
-	if (args[1])
-		status = atoi(args[1]);
-	exit(status);
-}
-
-int shell_env(char **args)
-{
-	char **env;
-	(void)args;
-
-	env = environ;
-	while (*env)
-	{
-		printf("%s\n", *env);
-		env++;
-	}
-	return 0;
-}
-
 int shell_cd(char **args, char *shell_name, int line_num)
 {
-	/* CD implementation */
-	return 0;
+	char *dir = args[1] ? args[1] : getenv("HOME");
+
+	if (!dir) {
+		fprintf(stderr, "%s: %d: cd: HOME not set\n", shell_name, line_num);
+		return (1);
+	}
+
+	if (chdir(dir) == -1) {
+		fprintf(stderr, "%s: %d: cd: can't cd to %s\n", 
+				shell_name, line_num, dir);
+		return (1);
+	}
+	return (0);
 }

@@ -11,6 +11,7 @@
 
 #define MAX_INPUT 1024
 #define MAX_ARGS 64
+#define MAX_PATH_LEN 1024
 #define TOKEN_DELIM " \t\r\n\a"
 
 /* Declare environ explicitly for C89 */
