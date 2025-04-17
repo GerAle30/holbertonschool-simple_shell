@@ -1,135 +1,47 @@
 #include "shell.h"
 
-/**
- * _strlen - Calculates string length
- * @s: Input string
- * Return: Length of string
- */
-int _strlen(const char *s)
+char *find_path(const char *command)
 {
-	int len = 0;
+	char *path, *dir, *full_path;
+	struct stat st;
 
-	while (s && s[len])
-		len++;
-	return (len);
-}
+	if (!command)
+		return NULL;
 
-/**
- * _strdup - Duplicates a string
- * @str: String to duplicate
- * Return: Pointer to new string
- */
-char *_strdup(const char *str)
-{
-	char *new;
-	int len, i;
+	/* Check if command has path (/, ./) */
+	if (command[0] == '/' || command[0] == '.')
+	{
+		if (stat(command, &st) == 0)
+			return (_strdup(command));
+		return (NULL);
+	}
 
-	if (!str)
+	path = getenv("PATH");
+	if (!path)
 		return (NULL);
 
-	len = _strlen(str);
-	new = malloc(sizeof(char) * (len + 1));
-	if (!new)
-		return (NULL);
+	path = _strdup(path);
+	dir = strtok(path, ":");
+	full_path = malloc(MAX_PATH_LEN);
 
-	for (i = 0; i <= len; i++)
-		new[i] = str[i];
-
-	return (new);
-}
-
-/**
- * _strcat - Concatenates two strings
- * @dest: Destination string
- * @src: Source string
- * Return: Pointer to destination string
- */
-char *_strcat(char *dest, const char *src)
-{
-	int i, j;
-
-	for (i = 0; dest[i] != '\0'; i++)
-		;
-	for (j = 0; src[j] != '\0'; j++)
-		dest[i + j] = src[j];
-	dest[i + j] = '\0';
-
-	return (dest);
-}
-
-/**
- * _strcmp - Compares two strings
- * @s1: First string
- * @s2: Second string
- * Return: Difference between strings
- */
-int _strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && (*s1 == *s2))
+	while (dir)
 	{
-		s1++;
-		s2++;
-	}
-	return (*(unsigned char *)s1 - *(unsigned char *)s2);
-}
+		_strcat(full_path, dir);
+		_strcat(full_path, "/");
+		_strcat(full_path, command);
 
-/**
- * parse_input - Parses input into arguments
- * @input: Input string to parse
- * Return: Array of arguments (NULL-terminated)
- */
-char **parse_input(char *input)
-{
-	char **args = malloc(MAX_ARGS * sizeof(char *));
-	char *token;
-	int i = 0;
+		if (stat(full_path, &st) == 0)
+		{
+			free(path);
+			return (full_path);
+		}
 
-	if (!args)
-	{
-		perror("malloc");
-		exit(EXIT_FAILURE);
+		full_path[0] = '\0';
+		dir = strtok(NULL, ":");
 	}
 
-	token = strtok(input, " \t\n");
-	while (token != NULL && i < MAX_ARGS - 1)
-	{
-		args[i++] = token;
-		token = strtok(NULL, " \t\n");
-	}
-	args[i] = NULL;
-
-	return (args);
+	free(full_path);
+	free(path);
+	return (NULL);
 }
 
-size_t _strlen(const char *s)
-{
-	size_t len = 0;
-	while (s && s[len])
-		len++;
-	return (len);
-}
-
-char *_strdup(const char *str)
-{
-	size_t len = _strlen(str) + 1;
-	char *new = malloc(len);
-	if (new)
-		memcpy(new, str, len);
-	return (new);
-}
-
-char *_strcat(char *dest, const char *src)
-{
-	char *ptr = dest + _strlen(dest);
-	while (*src)
-		*ptr++ = *src++;
-	*ptr = '\0';
-	return (dest);
-}
-
-int _strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && (*s1 == *s2))
-		s1++, s2++;
-	return (*(unsigned char *)s1 - *(unsigned char *)s2);
-}
