@@ -14,7 +14,6 @@
 #define MAX_PATH_LEN 1024
 #define PROMPT "#cisfun$ "
 
-extern char **environ;
 
 /* Helper Functions */
 int _strlen(const char *s);
