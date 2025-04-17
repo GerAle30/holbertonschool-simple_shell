@@ -25,7 +25,7 @@ int _strcmp(const char *s1, const char *s2);
 void display_prompt(void);
 char *find_path(const char *command);
 char **parse_input(char *input);
-int execute_command(char **args, char *shell_name);
+int execute_command(char **args, char *shell_name, int line_num);
 int handle_builtins(char **args);
 
 #endif
