@@ -1,16 +1,20 @@
-CC = gcc
-CFLAGS = -Wall - Wextra - pedantic - Werror
+CC := gcc
+CFLAGS := -Wall -Wextra -pedantic -Werror -std=gnu89
+SRC := $(wildcard *.c)
+OBJ := $(SRC:.c = .o)
+TARGET := hsh
 
-SRC = main.c parser.c execute.c builtins.c path.c
-OBJ = $(SRC : .c = .o)
-EXEC = hsh
+all: $(TARGET)
 
-all : $(EXEC)
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) $^ -o $@
 
-$(EXEC) : $(OBJ)
-	$(CC) $(CFLAGS) $ ^ -o $@
+clean:
+	rm -f $(OBJ)
 
-clean :
-	rm - f $(OBJ) $(EXEC)
+fclean: clean
+	rm -f $(TARGET)
 
-re : clean all
+re: fclean all
+
+.PHONY: all clean fclean re

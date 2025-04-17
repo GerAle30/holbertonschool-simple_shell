@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 void display_prompt(void)
 {
 	if (isatty(STDIN_FILENO))
-		printf(PROMPT);
+		printf("#cisfun$");
 	fflush(stdout);
 }
 
