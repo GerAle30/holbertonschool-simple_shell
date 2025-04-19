@@ -35,5 +35,9 @@ char **parse_input(char *line)
 	}
 
 	tokens[i] = NULL; /* Mark end*/
+<<<<<<< HEAD
 	return (tokens);
+=======
+	return (token);
+>>>>>>> 0f7de9f (mensaje)
 }

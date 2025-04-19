@@ -7,27 +7,31 @@
  */
 char *find_executable(char *command)
 {
-    char *path = getenv("PATH");
-    char *path_copy, *dir, *full_path;
+	char *path = getenv("PATH");
+	char *path_copy, *dir, *full_path;
 
-    if (!path) return NULL;
+	if (!path)
+	{
+		return (NULL);
+	}
+	path_copy = strdup(path);
+	dir = strtok(path_copy, ":");
 
-    path_copy = strdup(path);
-    dir = strtok(path_copy, ":");
+	while (dir)
+	{
+		full_path = malloc(strlen(dir) + strlen(command) + 2);
+		sprintf(full_path, "%s/%s", dir, command);
 
-    while (dir) {
-        full_path = malloc(strlen(dir) + strlen(command) + 2);
-        sprintf(full_path, "%s/%s", dir, command);
+		if (access(full_path, X_OK) == 0)
+		{
+			free(path_copy);
+			return (full_path);
+		}
 
-        if (access(full_path, X_OK) == 0) {
-            free(path_copy);
-            return full_path;
-        }
+		free(full_path);
+		dir = strtok(NULL, ":");
+	}
 
-        free(full_path);
-        dir = strtok(NULL, ":");
-    }
-
-    free(path_copy);
-    return NULL;
+	free(path_copy);
+	return (NULL);
 }

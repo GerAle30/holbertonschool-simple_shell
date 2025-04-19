@@ -1,59 +1,46 @@
 #include "shell.h"
 
 /**
- * main - Simple shell entry point
- * @argc: Argument count
- * @argv: Argument vector
- * Return: Exit status
- */
-int main(int argc, char **argv)
-{
-	char input[MAX_INPUT];
-	char **args;
-	ssize_t read_size;
-	int status = 1;
-
-	(void)argc;
-
-	while (status)
-	{
-		display_prompt();
-
-		read_size = read(STDIN_FILENO, input, MAX_INPUT);
-		if (read_size == -1)
-		{
-			perror("read");
-			exit(EXIT_FAILURE);
-		}
-		else if (read_size == 0)
-		{
-			if (isatty(STDIN_FILENO))
-				printf("\n");
-			break;
-		}
-
-		input[read_size] = '\0';
-		if (_strlen(input) == 0)
-			continue;
-
-		args = parse_input(input);
-		status = execute_command(args, argv[0]);
-		free(args);
-	}
-
-	return (EXIT_SUCCESS);
-}
-
-/**
  * display_prompt - Displays shell prompt
  */
 void display_prompt(void)
 {
+<<<<<<< HEAD
 	if (isatty(STDIN_FILENO))
 		printf("#cisfun$");
+=======
+	printf("#cisfun$ ");
+>>>>>>> 0f7de9f (mensaje)
 	fflush(stdout);
 }
 
+/**
+ * handle_builtins - Handles built-in commands
+ * @args: Command arguments
+ * Return: 0 if exit, 1 if other builtin executed, -1 if not a builtin
+ */
+int handle_builtins(char **args)
+{
+	if (!args || !args[0])
+		return (-1);
+
+	if (_strcmp(args[0], "exit") == 0)
+	{
+		return (shell_exit(args, "shell", 1));
+	}
+
+	if (_strcmp(args[0], "env") == 0)
+	{
+		return (shell_env(args));
+	}
+
+	if (_strcmp(args[0], "cd") == 0)
+	{
+		return (shell_cd(args, "shell", 1) == 0 ? 1 : 1);
+	}
+
+	return (-1);
+}
 /**
  * find_path - Finds command in PATH
  * @command: Command to find
@@ -103,71 +90,3 @@ char *find_path(const char *command)
 	return (NULL);
 }
 
-/**
- * execute_command - Executes a command
- * @args: Command arguments
- * @shell_name: Shell name for errors
- * Return: 1 to continue, 0 to exit
- */
-int execute_command(char **args, char *shell_name)
-{
-	pid_t pid;
-	char *path;
-	int status;
-
-	if (!args || !args[0])
-		return (1);
-
-	/* Handle built-in commands */
-	if (handle_builtins(args) == 0)
-		return (0);
-	path = find_path(args[0]);
-	if (!path)
-	{
-		fprintf(stderr, "%s: 1: %s: not found\n", shell_name, args[0]);
-		return (1);
-	}
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		free(path);
-		return (1);
-	}
-	if (pid == 0)
-	{
-		if (execve(path, args, environ) == -1)
-		{
-			perror(shell_name);
-			free(path);
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		waitpid(pid, &status, 0);
-		free(path);
-	}
-	return (1);
-}
-/**
- * handle_builtins - Handles built-in commands
- * @args: Command arguments
- * Return: 1 if not builtin, 0 if exit
- */
-int handle_builtins(char **args)
-{
-	if (_strcmp(args[0], "exit") == 0)
-		return (0);
-
-	if (_strcmp(args[0], "env") == 0)
-	{
-		char **env = environ;
-
-		while (*env)
-			printf("%s\n", *env++);
-		return (1);
-
-	}
-	return (-1);
-}
