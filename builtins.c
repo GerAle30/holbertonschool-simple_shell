@@ -1,11 +1,11 @@
 #include "shell.h"
 
-<<<<<<< HEAD
+ HEAD
 int handle_builtins(char **args, char *shell_name, int line_num)
 {
 	if (!args[0])
 		return (-1);
-=======
+
 /**
  * shell_cd - Change directory command implementation
  * @args: Command arguments
@@ -42,14 +42,14 @@ int shell_cd(char **args, char *shell_name, int line_num)
 int shell_exit(char **args, char *shell_name, int line_num)
 {
 	int status = 0;
->>>>>>> 0f7de9f (mensaje)
+ 0f7de9f (mensaje)
 
 	if (_strcmp(args[0], "exit") == 0)
 		return shell_exit(args, shell_name, line_num);
 
 	if (_strcmp(args[0], "env") == 0)
 	{
-<<<<<<< HEAD
+ HEAD
 		char **env = environ;
 		while (*env)
 			printf("%s\n", *env++);
@@ -85,7 +85,7 @@ int shell_cd(char **args, char *shell_name, int line_num)
 		return (1);
 	}
 	return (0);
-=======
+
 		char *endptr;
 
 		status = strtol(args[1], &endptr, 10);
@@ -114,5 +114,5 @@ int shell_env(char **args)
 		printf("%s\n", *env++);
 
 	return (1);
->>>>>>> 0f7de9f (mensaje)
+ 0f7de9f (mensaje)
 }
