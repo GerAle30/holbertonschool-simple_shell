@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "$ ", 2);
+			write(STDOUT_FILENO, " $ ", 2);
 
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 			exit(0);
 		}
 
-		line[nread -1] = '\0'; /*remove newline */
+		line[nread(-1)] = '\0'; /*remove newline */
 		args = parse_line(line);
 
 		if (args == NULL || args[0] == NULL)
