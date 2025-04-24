@@ -1,50 +1,53 @@
 #include "shell.h"
 
 /**
- * main - Entry point of the simple shell
- * @argc: Argument count (unused)
- * @argv: Argument vector (used for error messages)
+ * main - Entry point for the shell
  *
- * Return: 0 on sucess
+ * Return: 0 on success, -1 on failure
  */
-int main(int argc, char **argv)
+int main(void)
 {
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
-	char **args = NULL;
-	(void)argc;
+	char **args;
 
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, " $ ", 2);
+			write(STDOUT_FILENO, "$ ", 2);
 
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
 		{
 			free(line);
-			exit(0);
+			write(STDOUT_FILENO, "\n", 1);
+			break;
 		}
 
-		line[nread(-1)] = '\0'; /*remove newline */
+		if (nread > 0 && line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
+
 		args = parse_line(line);
+		if (args == NULL)
+			continue;
 
-		if (args == NULL || args[0] == NULL)
+		if (_strcmp(args[0], "exit") == 0)
 		{
 			free_args(args);
-			continue;
+			break;
 		}
-		if (handle_builtin(args, line))
+		else if (_strcmp(args[0], "env") == 0)
 		{
-			free_args(args);
-			continue;
+			print_env();
 		}
-
-		execute_command(args, argv[0]);
-
+		else
+		{
+			execute_command(args, args[0]);
+		}
 		free_args(args);
 	}
 	free(line);
 	return (0);
 }
+

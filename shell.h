@@ -18,6 +18,7 @@ void free_args(char **args);
 int handle_builtin(char **args, char *line);
 void print_env(void);
 void execute_command(char **args, char *program_name);
+int _strcmp(char *s1, char *s2);
 
 #endif /* SHELL_H */
 
