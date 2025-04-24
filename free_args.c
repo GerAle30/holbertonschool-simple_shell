@@ -11,11 +11,9 @@ void free_args(char **args)
 	if (args == NULL)
 		return;
 
-	while (args[i])
-	{
+	for (i = 0; args[i]; i++)
 		free(args[i]);
-		i++;
-	}
+
 	free(args);
 }
 

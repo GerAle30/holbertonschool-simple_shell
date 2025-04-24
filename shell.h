@@ -17,11 +17,16 @@ char **parse_line(char *line);
 void free_args(char **args);
 int handle_builtin(char **args, char *line);
 void print_env(void);
-void execute_command(char **args, char *prog, int *exit_status);
+void execute_command(char **args, char *prog_name, int *exit_status);
+
+/*Helpers */
 int _strcmp(const char *s1, const char *s2);
 int _strlen(const char *s);
 char *_strdup(const char *s);
 int _strncmp(const char *s1, const char *s2, size_t n);
+char *_strcpy(char *dest, const char *src);
+char *_strcat(char *dest, const char *src);
+
 
 #endif /* SHELL_H */
 

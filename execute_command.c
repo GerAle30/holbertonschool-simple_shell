@@ -1,8 +1,8 @@
 #include "shell.h"
 
 /**
- * find_path - Find the PATH variable in environ
- * Return: pointer to the PATH string or NULL
+ * find_path - Busca el valor de PATH sin usar getenv
+ * Return: una copia del contenido de PATH, o NULL si no existe
  */
 char *find_path(void)
 {
@@ -11,46 +11,57 @@ char *find_path(void)
 	for (i = 0; environ[i]; i++)
 	{
 		if (_strncmp(environ[i], "PATH=", 5) == 0)
-			return (environ[i] + 5); /* Skip "PATH=" */
+			return (_strdup(environ[i] + 5));
 	}
 	return (NULL);
 }
 
 /**
- * execute_command - Executes a command if it exists in PATH
- * @args: Command and arguments
- * @prog: Program name (for error messages)
- * @exit_status: Pointer to variable that stores exit status
+ * execute_command - Ejecuta un comando si existe
+ * @args: lista de argumentos
+ * @prog: nombre del programa (para mensajes de error)
+ * @exit_status: puntero al status de salida
  */
 void execute_command(char **args, char *prog, int *exit_status)
 {
-	char *cmd = NULL, *path, *pcopy, *tok;
-	char full_path[PATH_MAX];
+	char *cmd = NULL, *path_value, *path_token, *full_path;
+	int found = 0;
 	pid_t pid;
 	int status;
 
-	if (access(args[0], X_OK) == 0)
+	if (args[0][0] == '/' || args[0][0] == '.')
 	{
-		cmd = args[0];
+		if (access(args[0], X_OK) == 0)
+			cmd = _strdup(args[0]);
 	}
 	else
 	{
-		path = find_path();
-		if (path)
+		path_value = find_path();
+		if (path_value)
 		{
-			pcopy = _strdup(path);
-			tok = strtok(pcopy, ":");
-			while (tok)
+			path_token = strtok(path_value, ":");
+			while (path_token)
 			{
-				snprintf(full_path, sizeof(full_path), "%s/%s", tok, args[0]);
+				full_path = malloc(_strlen(path_token) + _strlen(args[0]) + 2);
+				if (!full_path)
+				{
+					free(path_value);
+					return;
+				}
+				_strcpy(full_path, path_token);
+				_strcat(full_path, "/");
+				_strcat(full_path, args[0]);
+
 				if (access(full_path, X_OK) == 0)
 				{
-					cmd = _strdup(full_path);
+					cmd = full_path;
+					found = 1;
 					break;
 				}
-				tok = strtok(NULL, ":");
+				free(full_path);
+				path_token = strtok(NULL, ":");
 			}
-			free(pcopy);
+			free(path_value);
 		}
 	}
 
@@ -73,11 +84,9 @@ void execute_command(char **args, char *prog, int *exit_status)
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 			*exit_status = WEXITSTATUS(status);
-		else
-			*exit_status = 1;
 	}
 
-	if (cmd != args[0])
+	if (!found && cmd)
 		free(cmd);
 }
 

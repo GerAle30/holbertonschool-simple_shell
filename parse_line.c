@@ -1,41 +1,43 @@
 #include "shell.h"
 
 /**
- * parse_line - Split input line into an array of arguments
- * @line: Input string to parse
- *
- * Return: NULL-terminated array of strings (arguments)
+ * parse_line - Divides a line into tokens (command + arguments)
+ * @line: line to parse
+ * Return: array of tokens (arguments)
  */
 char **parse_line(char *line)
 {
-	char *token = NULL, *line_copy = NULL;
-	char **args = NULL;
-	int i = 0, bufsize = 64;
+	char **args;
+	char *token;
+	int bufsize = 64, position = 0;
 
-	args = malloc(sizeof(char *) * bufsize);
-	if (args == NULL)
-		return (NULL);
+	args = malloc(bufsize * sizeof(char *));
+	if (!args)
+	{
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
 
-	line_copy = strdup(line);
-	token = strtok(line_copy, " \t\r\n");
-
+	token = strtok(line, " \t\r\n\a");
 	while (token != NULL)
 	{
-		args[i++] = strdup(token);
-		if (i >= bufsize)
+		args[position] = token;
+		position++;
+
+		if (position >= bufsize)
 		{
 			bufsize += 64;
-			args = realloc(args, sizeof(char *) * bufsize);
-			if (args == NULL)
+			args = realloc(args, bufsize * sizeof(char *));
+			if (!args)
 			{
-				free(line_copy);
-				return (NULL);
+				perror("realloc");
+				exit(EXIT_FAILURE);
 			}
 		}
-		token = strtok(NULL, " \t\r\n");
+		token = strtok(NULL, " \t\r\n\a");
 	}
-	args[i] = NULL;
-	free(line_copy);
+	args[position] = NULL;
+
 	return (args);
 }
 
