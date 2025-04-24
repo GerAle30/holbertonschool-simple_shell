@@ -1,92 +1,143 @@
 #include "shell.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+
+/* Macro to handle child process error and exit */
+#define HANDLE_CHILD_ERROR(p, n) do { \
+	perror(n); \
+	free(p); \
+	exit(errno == ENOENT ? 2 : EXIT_FAILURE); \
+} while (0)
 
 /**
- * find_path - Busca el valor de PATH sin usar getenv
- * Return: una copia del contenido de PATH, o NULL si no existe
+ * get_path_env - get the PATH environment variable
+ * Return: pointer to PATH value, or NULL if not found
  */
-char *find_path(void)
+static char *get_path_env(void)
 {
 	int i;
 
-	for (i = 0; environ[i]; i++)
+	for (i = 0; environ[i] != NULL; i++)
 	{
-		if (_strncmp(environ[i], "PATH=", 5) == 0)
-			return (_strdup(environ[i] + 5));
+		if (strncmp(environ[i], "PATH=", 5) == 0)
+			return (environ[i] + 5);
 	}
 	return (NULL);
 }
 
 /**
- * execute_command - Ejecuta un comando si existe
- * @args: lista de argumentos
- * @prog: nombre del programa (para mensajes de error)
- * @exit_status: puntero al status de salida
+ * search_in_path - search for cmd in PATH directories
+ * @cmd: command to search for
+ * @path_env: PATH environment variable value
+ * Return: malloc'd full path if found (caller must free), or NULL
  */
-void execute_command(char **args, char *prog, int *exit_status)
+static char *search_in_path(const char *cmd, char *path_env)
 {
-	char *cmd = NULL, *path_value, *path_token, *full_path;
-	int found = 0;
+	char *path_dup, *dir, *full;
+	size_t len;
+
+	path_dup = strdup(path_env);
+	if (!path_dup)
+		return (NULL);
+
+	for (dir = strtok(path_dup, ":"); dir; dir = strtok(NULL, ":"))
+	{
+		len = strlen(dir) + 1 + strlen(cmd) + 1;
+		full = malloc(len);
+		if (!full)
+			break;
+		snprintf(full, len, "%s/%s", dir, cmd);
+		if (access(full, X_OK) == 0)
+		{
+			free(path_dup);
+			return (full);
+		}
+		free(full);
+	}
+	free(path_dup);
+	return (NULL);
+}
+
+/**
+ * resolve_path - search for cmd in PATH or use cmd if contains '/'.
+ * @cmd: the command name from argv[0].
+ * Return: malloc'd full path if found (caller must free), or NULL.
+ */
+static char *resolve_path(const char *cmd)
+{
+	char *path_env;
+
+	if (strchr(cmd, '/'))
+	{
+		if (access(cmd, X_OK) == 0)
+			return (strdup(cmd));
+		return (NULL);
+	}
+
+	path_env = get_path_env();
+	if (!path_env)
+		return (NULL);
+
+	return (search_in_path(cmd, path_env));
+}
+
+/**
+ * resolve_and_execute - resolve path and execute command
+ * @args: NULL-terminated argv array
+ * @prog_name: argv[0] for error messages
+ * @exit_status: pointer to store the command's exit status
+ *
+ * Return: 1 if command executed, 0 if command not found
+ */
+static int resolve_and_execute(char **args, const char *prog_name,
+							int *exit_status)
+{
 	pid_t pid;
+	char *path;
 	int status;
 
-	if (args[0][0] == '/' || args[0][0] == '.')
-	{
-		if (access(args[0], X_OK) == 0)
-			cmd = _strdup(args[0]);
-	}
-	else
-	{
-		path_value = find_path();
-		if (path_value)
-		{
-			path_token = strtok(path_value, ":");
-			while (path_token)
-			{
-				full_path = malloc(_strlen(path_token) + _strlen(args[0]) + 2);
-				if (!full_path)
-				{
-					free(path_value);
-					return;
-				}
-				_strcpy(full_path, path_token);
-				_strcat(full_path, "/");
-				_strcat(full_path, args[0]);
-
-				if (access(full_path, X_OK) == 0)
-				{
-					cmd = full_path;
-					found = 1;
-					break;
-				}
-				free(full_path);
-				path_token = strtok(NULL, ":");
-			}
-			free(path_value);
-		}
-	}
-
-	if (!cmd)
-	{
-		fprintf(stderr, "%s: 1: %s: not found\n", prog, args[0]);
-		*exit_status = 127;
-		return;
-	}
+	path = resolve_path(args[0]);
+	if (path == NULL)
+		return (0);
 
 	pid = fork();
-	if (pid == 0)
+	if (pid == -1)
 	{
-		execve(cmd, args, environ);
-		perror("execve");
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			*exit_status = WEXITSTATUS(status);
+		perror(prog_name);
+		free(path);
+		return (1);
 	}
 
-	if (!found && cmd)
-		free(cmd);
+	if (pid == 0)
+	{
+		execve(path, args, environ);
+		HANDLE_CHILD_ERROR(path, prog_name);
+	}
+
+	free(path);
+	waitpid(pid, &status, 0);
+	*exit_status = WIFEXITED(status) ? WEXITSTATUS(status) : 1;
+
+	return (1);
+}
+
+/**
+ * execute_command - resolve cmd, then fork & exec; skip fork if not found
+ * @args: NULL-terminated argv array
+ * @prog_name: argv[0] for error messages
+ * @exit_status: pointer to store the command's exit status
+ */
+void execute_command(char **args, const char *prog_name, int *exit_status)
+{
+	if (!resolve_and_execute(args, prog_name, exit_status))
+	{
+		fprintf(stderr, "%s: 1: %s: not found\n", prog_name, args[0]);
+		*exit_status = 127;
+	}
 }
 

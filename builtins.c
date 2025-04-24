@@ -1,44 +1,43 @@
 #include "shell.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /**
- * handle_builtin - Handle built-in shell commands
- * @args: Command and its arguments
- * @line: Input line (to free if exiting)
- *
- * Return: 1 if a built-in command was handled, 0 otherwise
+ * print_environment - prints the current environment variables
  */
-int handle_builtin(char **args, char *line)
+void print_environment(void)
 {
-	if (args[0] == NULL)
-		return (0);
+	size_t i;
+
+	for (i = 0; environ[i]; i++)
+		printf("%s\n", environ[i]);
+}
+
+int handle_command(char **args, char *line, const char *prog_name,
+		   int *should_exit, int current_status)
+{
+	int exit_status = current_status;
 
 	if (strcmp(args[0], "exit") == 0)
 	{
+		free_args(args);
 		free(line);
-		exit(0);
+		*should_exit = 1;
+		return (exit_status);
 	}
 	else if (strcmp(args[0], "env") == 0)
 	{
-		print_env();
-		return (1);
+		print_environment();
+		free_args(args);
+		free(line);
+		return (0);
 	}
 
-	return (0);
-}
-
-/**
- * print_env - Print the current environment
- */
-void print_env(void)
-{
-	int i = 0;
-
-	while (environ[i])
-	{
-		write(STDOUT_FILENO, environ[i], strlen(environ[i]));
-		write(STDOUT_FILENO, "\n", 1);
-		i++;
-	}
+	execute_command(args, prog_name, &exit_status);
+	free_args(args);
+	free(line);
+	return (exit_status);
 }
 

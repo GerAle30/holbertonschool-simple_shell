@@ -1,32 +1,17 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <limits.h>
-#include <errno.h>
-/*Global environ variable */
 extern char **environ;
 
-/* Function prototypes */
-char **parse_line(char *line);
+void print_prompt(void);
+char *read_line(void);
+void trim_newline(char *s);
+int is_blank(const char *s);
+char **split_line(char *line);
 void free_args(char **args);
-int handle_builtin(char **args, char *line);
-void print_env(void);
-void execute_command(char **args, char *prog_name, int *exit_status);
-
-/*Helpers */
-int _strcmp(const char *s1, const char *s2);
-int _strlen(const char *s);
-char *_strdup(const char *s);
-int _strncmp(const char *s1, const char *s2, size_t n);
-char *_strcpy(char *dest, const char *src);
-char *_strcat(char *dest, const char *src);
-
+void execute_command(char **args, const char *prog_name, int *exit_status);
+void print_environment(void);
+int handle_command(char **args, char *line, const char *prog_name, int *should_exit, int current_status);
 
 #endif /* SHELL_H */
 
