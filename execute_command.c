@@ -1,50 +1,49 @@
 #include "shell.h"
 
 /**
- * execute_command - Executes a command with fork and execve
- * @args: Command and arguments
- * @prog: Program name (for error messages)
+ * execute_command - Creates a child process to execute a command
+ * @args: NULL-terminated array of arguments
+ * @program_name: Name of the shell program (for error messages)
  */
-void execute_command(char **args, char *prog)
+void execute_command(char **args, char *program_name)
 {
-	char *cmd = NULL, *p, *pcopy, *tok, path[PATH_MAX];
 	pid_t pid;
 	int status;
+	char buffer[PATH_MAX];
 
-	if (access(args[0], X_OK) == 0)
-		cmd = args[0];
-	else
+	if (access(args[0], X_OK) == -1)
 	{
-		p = getenv("PATH");
-		if (p)
+		/* Try to resolve using PATH manually (no getenv) */
+		char *path = "/bin:/usr/bin:/usr/local/bin";
+		char *token = strtok(path, ":");
+
+		while (token)
 		{
-			pcopy = strdup(p);
-			tok = strtok(pcopy, ":");
-			while (tok && !cmd)
+			snprintf(buffer, sizeof(buffer), "%s/%s", token, args[0]);
+			if (access(buffer, X_OK) == 0)
 			{
-				snprintf(path, PATH_MAX, "%s/%s", tok, args[0]);
-				if (access(path, X_OK) == 0)
-					cmd = strdup(path);
-				tok = strtok(NULL, ":");
+				args[0] = buffer;
+				break;
 			}
-			free(pcopy);
+			token = strtok(NULL, ":");
 		}
 	}
-	if (!cmd)
+
+	pid = fork();
+	if (pid == -1)
 	{
-		fprintf(stderr, "%s: 1: %s: not found\n", prog, args[0]);
+		perror(program_name);
 		return;
 	}
-	pid = fork();
 	if (pid == 0)
 	{
-		execve(cmd, args, environ);
-		perror("execve");
-		exit(EXIT_FAILURE);
+		execve(args[0], args, environ);
+		perror(program_name);
+		exit(127);
 	}
 	else
+	{
 		waitpid(pid, &status, 0);
-	if (cmd != args[0])
-		free(cmd);
+	}
 }
 
