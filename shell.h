@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <limits.h>
-
+#include <errno.h>
 /*Global environ variable */
 extern char **environ;
 
@@ -19,6 +19,7 @@ int handle_builtin(char **args, char *line);
 void print_env(void);
 void execute_command(char **args, char *program_name);
 int _strcmp(const char *s1, const char *s2);
+int _strlen(const char *s);
 
 #endif /* SHELL_H */
 

@@ -1,49 +1,46 @@
 #include "shell.h"
 
 /**
- * execute_command - Executes a command with fork and execve
- * @args: Command and arguments
- * @prog: Program name (for error messages)
+ * execute_command - Forks and executes a command
+ * @args: Arguments array
+ * @program_name: Name of the program (for error messages)
  */
-void execute_command(char **args, char *prog)
+void execute_command(char **args, char *program_name)
 {
-	char *cmd = NULL, *p, *pcopy, *tok, path[PATH_MAX];
 	pid_t pid;
 	int status;
+	char *full_path;
 
-	if (access(args[0], X_OK) == 0)
-		cmd = args[0];
-	else
+	full_path = args[0];
+	if (access(full_path, X_OK) != 0)
 	{
-		p = getenv("PATH");
-		if (p)
-		{
-			pcopy = strdup(p);
-			tok = strtok(pcopy, ":");
-			while (tok && !cmd)
-			{
-				snprintf(path, PATH_MAX, "%s/%s", tok, args[0]);
-				if (access(path, X_OK) == 0)
-					cmd = strdup(path);
-				tok = strtok(NULL, ":");
-			}
-			free(pcopy);
-		}
+		write(STDERR_FILENO, program_name, _strlen(program_name));
+		write(STDERR_FILENO, ": 1: ", 5);
+		write(STDERR_FILENO, args[0], _strlen(args[0]));
+		write(STDERR_FILENO, ": not found\n", 12);
+		exit(127);
 	}
-	if (!cmd)
-	{
-		fprintf(stderr, "%s: 1: %s: not found\n", prog, args[0]);
-		return;
-	}
+
 	pid = fork();
 	if (pid == 0)
 	{
-		execve(cmd, args, environ);
-		perror("execve");
-		exit(EXIT_FAILURE);
+		if (execve(full_path, args, environ) == -1)
+		{
+			perror(program_name);
+			exit(errno == ENOENT ? 127 : 126);
+		}
+	}
+	else if (pid > 0)
+	{
+		waitpid(pid, &status, 0);
+		/* Check if child exited normally */
+		if (WIFEXITED(status))
+			exit(WEXITSTATUS(status));  /* <- Esto es clave */
 	}
 	else
-		waitpid(pid, &status, 0);
-	if (cmd != args[0])
-		free(cmd);
+	{
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
 }
+
