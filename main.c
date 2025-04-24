@@ -13,9 +13,10 @@ void prompt_user(void)
  * handle_input - Handles user input and command execution
  * @line: pointer to the input buffer
  * @nread: number of characters read
+ * @exit_status: pointer to exit status variable
  * Return: -1 to exit shell, 0 to continue
  */
-int handle_input(char *line, ssize_t nread)
+int handle_input(char *line, ssize_t nread, int *exit_status)
 {
 	char **args;
 
@@ -37,7 +38,7 @@ int handle_input(char *line, ssize_t nread)
 	}
 	else
 	{
-		execute_command(args, "./hsh");
+		execute_command(args, "./hsh", exit_status);
 	}
 	free_args(args);
 	return (0);
@@ -53,7 +54,8 @@ int main(void)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
-	int status = 0;
+	int exit_status = 0;
+	int status;
 
 	while (1)
 	{
@@ -67,7 +69,7 @@ int main(void)
 			break;
 		}
 
-		status = handle_input(line, nread);
+		status = handle_input(line, nread, &exit_status);
 		if (status == -1)
 			break;
 	}
