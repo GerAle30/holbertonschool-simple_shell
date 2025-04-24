@@ -74,3 +74,24 @@ char *_strcat(char *dest, const char *src)
 	return (dest);
 }
 
+/**
+ * _strdup - Duplicates a string in a new memory space
+ * @str: The string to duplicate
+ *
+ * Return: Pointer to the duplicated string, or NULL if malloc fails
+ */
+char *_strdup(const char *str)
+{
+	char *copy;
+	size_t len = _strlen(str), i;
+
+	copy = malloc(len + 1);
+	if (!copy)
+		return (NULL);
+
+	for (i = 0; i < len; i++)
+		copy[i] = str[i];
+	copy[i] = '\0';
+
+	return (copy);
+}
