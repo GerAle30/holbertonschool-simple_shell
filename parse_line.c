@@ -1,41 +1,96 @@
 #include "shell.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /**
- * parse_line - Split input line into an array of arguments
- * @line: Input string to parse
- *
- * Return: NULL-terminated array of strings (arguments)
+ * read_line - reads one line from stdin via getline
+ * Return: malloc’d line, or NULL on EOF/error
  */
-char **parse_line(char *line)
+char *read_line(void)
 {
-	char *token = NULL, *line_copy = NULL;
-	char **args = NULL;
-	int i = 0, bufsize = 64;
+	char *line = NULL;
+	size_t len = 0;
 
-	args = malloc(sizeof(char *) * bufsize);
-	if (args == NULL)
+	if (getline(&line, &len, stdin) == -1)
+	{
+		free(line);
+		return (NULL);
+	}
+	return (line);
+}
+
+/**
+ * trim_newline - replaces trailing '\n' with '\0'
+ * @s: line to modifiy
+ */
+void trim_newline(char *s)
+{
+	size_t i = 0;
+
+	if (!s)
+		return;
+	while (s[i] && s[i] != '\n')
+		i++;
+	s[i] = '\0';
+}
+
+/**
+ * is_blank - checks if a string is all spaces/tabs or empty
+ * @s: string to check
+ * Return: 1 if blank, 0 otherwise
+ */
+int is_blank(const char *s)
+{
+	if (!s)
+		return (1);
+	while (*s)
+	{
+		if (*s != ' ' && *s != '\t')
+			return (0);
+		s++;
+	}
+	return (1);
+}
+
+/**
+ * split_line - splits a line into whitespace-delimited tokens
+ * @line: input string (modified in place)
+ * Return: NULL-terminated array of pointers, or NULL on alloc error
+ */
+char **split_line(char *line)
+{
+	char **args;
+	size_t bufsize = 64, pos = 0;
+	char *token;
+
+	args = malloc(bufsize * sizeof(char *));
+	if (!args)
 		return (NULL);
 
-	line_copy = strdup(line);
-	token = strtok(line_copy, " \t\r\n");
-
-	while (token != NULL)
+	token = strtok(line, " \t");
+	while (token)
 	{
-		args[i++] = strdup(token);
-		if (i >= bufsize)
+		args[pos++] = token;
+		if (pos >= bufsize)
 		{
-			bufsize += 64;
-			args = realloc(args, sizeof(char *) * bufsize);
-			if (args == NULL)
-			{
-				free(line_copy);
+			bufsize *= 2;
+			args = realloc(args, bufsize * sizeof(char *));
+			if (!args)
 				return (NULL);
-			}
 		}
-		token = strtok(NULL, " \t\r\n");
+		token = strtok(NULL, " \t");
 	}
-	args[i] = NULL;
-	free(line_copy);
+	args[pos] = NULL;
 	return (args);
+}
+
+/**
+ * free_args - frees the argument array
+ * @args: array returned by split_line
+ */
+void free_args(char **args)
+{
+	free(args);
 }
 
