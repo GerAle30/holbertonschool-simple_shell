@@ -94,4 +94,3 @@ Known issues include:
 .SH SEE ALSO
 .BR sh (1),
 .BR bash (1),
-.BR csh (1)
