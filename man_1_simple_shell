@@ -1,83 +1,68 @@
-.TH simple_shell "April 2025" "Version 1.0" "User Commands"
-.SH NAME
-simple_shell \- simple UNIX command line interpreter
-.SH SYNOPSIS
-.B ./hsh
-.SH DESCRIPTION
-.B shell
-is a simple UNIX command interpreter that reads commands from standard input and executes them.
-It provides basic functionality similar to the standard shell, including the execution of external commands
-by searching the PATH environment variable.
-.PP
-When invoked, the shell displays a prompt and waits for the user to type a command. The command line
-is read, parsed, and then executed. This process is repeated until the user exits the shell.
-.SH FEATURES
-.TP
-.B Interactive Mode
-When shell is connected to a terminal, it operates in interactive mode. In this mode, it displays a prompt
-.B ($)
-before reading each command.
-.TP
-.B Non-Interactive Mode
-When shell receives its input from a pipe or a file, it processes commands without displaying a prompt.
-.TP
-.B Command Execution
-Commands are executed by searching for the executable in the directories listed in the PATH environment variable.
-If the command contains a forward slash ('/'), the shell will attempt to execute it directly without searching PATH.
-.TP
-.B Built-in Commands
-The following built-in commands are supported:
-.RS
-.TP
-.B exit
-Exit the shell with the status of the last executed command, or with a specified exit status.
-.TP
-.B env
-Print the current environment variables.
-.RE
-.SH EXIT STATUS
-The exit status of the shell is the exit status of the last command executed. If the command is not found,
-the exit status is 127. If the command is found but not executable, the exit status is determined by the system error.
-.SH ENVIRONMENT
-.TP
-.B PATH
-List of directories to search for commands, colon-separated.
-.SH EXAMPLES
-.TP
-Run a command:
-.PP
-.nf
-.RS
-($) ls -l
-.RE
-.fi
-.TP
-Run a built-in command:
-.PP
-.nf
-.RS
-($) env
-.RE
-.fi
-.TP
-Exit the shell:
-.PP
-.nf
-.RS
-($) exit
-.RE
-.fi
-.SH BUGS
+**NAME**  
+simple_shell — simple UNIX command line interpreter
+
+**SYNOPSIS**  
+`./hsh`
+
+**DESCRIPTION**  
+The `simple_shell` is a basic UNIX command interpreter that reads commands from standard input and executes them. It offers core functionality similar to standard shells, including executing external commands by searching the directories listed in the `PATH` environment variable.
+
+When invoked, the shell displays a prompt and waits for user input. It reads, parses, and executes commands repeatedly until the user exits the shell.
+
+**FEATURES**
+
+- **Interactive Mode**  
+  When connected to a terminal, the shell operates in interactive mode and displays a prompt (`$`) before each command.
+
+- **Non-Interactive Mode**  
+  When receiving input from a pipe or file, the shell processes commands without showing a prompt.
+
+- **Command Execution**  
+  Commands are executed by searching for the executable in the directories specified in `PATH`. If the command contains a slash (`/`), the shell attempts to execute it directly.
+
+- **Built-in Commands**  
+  The shell supports the following built-ins:
+
+  - `exit`  
+    Exits the shell, returning the status of the last executed command or a specified status.
+
+  - `env`  
+    Prints the current environment variables.
+
+**EXIT STATUS**  
+The exit status of the shell is the status of the last command executed. If the command is not found, the exit status is `127`. If the command is found but not executable, the status depends on the system error.
+
+**ENVIRONMENT VARIABLES**  
+- `PATH`  
+  Specifies the colon-separated list of directories to search for commands.
+
+**EXAMPLES**
+
+- Run a command:
+  
+  ```
+  ($) ls -l
+  ```
+
+- Run a built-in command:
+  
+  ```
+  ($) env
+  ```
+
+- Exit the shell:
+  
+  ```
+  ($) exit
+  ```
+
+**BUGS**  
 The current implementation has several limitations:
-.IP \(bu 2
-No support for command line arguments or options.
-.IP \(bu 2
-No support for pipes, redirections, or background processes.
-.IP \(bu 2
-No support for command aliases or shell variables.
-.IP \(bu 2
-No command history functionality.
-.SH SEE ALSO
-.BR sh (1),
-.BR bash (1),
-.BR dash (1)
+
+- No support for command line arguments or options beyond simple commands.
+- No support for pipes, redirections, or background processes.
+- No command aliasing or shell variables.
+- No command history functionality.
+
+**SEE ALSO**  
+`sh(1)`, `bash(1)`, `dash(1)`
